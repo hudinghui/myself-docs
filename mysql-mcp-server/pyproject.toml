@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mysql-mcp-server"
+version = "0.1.0"
+description = "A readonly MySQL MCP server exposing schema metadata and query tools."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "mcp>=1.0.0",
+  "mysql-connector-python>=9.0.0",
+]
+
+[project.scripts]
+mysql-mcp-server = "mysql_mcp.server:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

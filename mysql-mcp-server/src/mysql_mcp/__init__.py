@@ -1,0 +1,2 @@
+"""MySQL MCP server package."""
+

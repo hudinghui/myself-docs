@@ -1,0 +1,3 @@
+[mcp_servers.mysql_readonly]
+command = "/Users/edy/devople/doc/mysql-mcp-server/.venv/bin/mysql-mcp-server"
+cwd = "/Users/edy/devople/doc/mysql-mcp-server"

@@ -1,0 +1,1490 @@
+1、代码
+    xxjob 任务。com.voghion.marketing.push.core.xxljob  目录
+
+    业务事件触达执行 com.voghion.marketing.push.admin.consumer.business
+    监听消息队列进行事件处理。
+
+
+    ConfigStatusChange 修改配置状态的任务作用: 将在执行周期内的配置,开始的带开始状态改为进行中;不再执行周期内的状态设置为结束
+
+
+    MarketingApiTopicConst 消息topic常量 消息设置优先级?
+    1、push 发送最终是发送mq消息到指定topic
+    2、email 发送mq
+
+2、业务逻辑列表
+     数据结构关系不同类型推送任务包括，任务生成和信息发送，先生存任务后基于任务进行信息发送
+        任务配置生成
+        信息发送
+
+ 2、数据结构关系 
+    sms\wathsapp类型
+    xxx_task_config 配置表
+    xxx_task_template_config  配置对应的模版配置
+    xxx_task_list 配置生存的任务表
+
+
+    comment中 
+    marketing_reach_config 触达配置 场景 每个场景下可选择不同的触达渠道,不同渠道的触达配置关联信息如下表
+    marketing_reach_email_config  邮件渠道的配置
+    marketing_reach_ime_config  iMessage渠道
+    marketing_reach_push_config  push渠道
+    marketing_reach_sms_config  sms渠道
+    marketing_reach_whatsapp_config  wathsapp渠道
+
+
+
+OrderRefundSuccessNotice.consume(OrderStatusChangeVo)  
+OrderCreateAfter15MinNotice.consume(OrderStatusChangeVo)
+OrderCreateAfter24HourNotice.consume(OrderStatusChangeVo)
+OrderPaySuccessNotice.consume(OrderStatusChangeVo) 
+
+MerchantReissueNotice.doBusiness(TradeOrderDetailMessage)  
+OvertimeNotInStockSystemCancelNotice.doBusiness(TradeOrderDetailMessage)  
+OrderCancelAfterProductOutboundNotice.doBusiness(TradeOrderDetailMessage)  
+MerchantTransactionNotSoldNotice.doBusiness(TradeOrderDetailMessage)  
+MerchantCancelsOrderNotice.doBusiness(TradeOrderDetailMessage)  
+
+ArriveWithoutPickupNotice.consume(LogisticsTrackingVo)  
+DeliveryExceptionNoticeService.consume(LogisticsTrackingVo)  
+DeliveredAfter12HoursCommentNotice.consume(LogisticsTrackingVo)  
+DeliveredNotice.consume(LogisticsTrackingVo)  
+AbsReachMerchantService.consume(LogisticsTrackingVo)  
+ArriveWithoutPickUpDelayNotice.consume(LogisticsTrackingVo)  
+DeliveredAfter48HoursNotice.consume(LogisticsTrackingVo)  
+
+
+
+group：
+appId:
+
+
+任务执行中要紧急终止任务怎么办？
+
+
+
+
+task 测试数据
+[{"callBackType":0,"notificationState":true,"registrationId":"141fe1da9f8d2f21d6c","sendCount":1,"sentTime":12345667456},{"callBackType":0,"notificationState":true,"registrationId":"1xxxxxx","sendCount":1,"sentTime":12345667456}]
+push 测试数据
+{
+    "appId": "voghion-marketing-push",
+    "pushType": "mkt",
+    "batchPush": false,
+    "businessName": "营销自动化",
+    "channel": "JI_GUANG_PUSH_CHANNEL",
+    "messageOfJG": {
+    "audience": "REGISTRATION_ID",
+    "content": "Richiedi il tuo regalo da 3 € su iMessage >",
+    "icon": "https://g-images.voghion.com/productImages/332_1749182377294_voghion1000x1000.png",
+    "inAppMessage": true,
+    "jumpUrl": "voghion://approuter/showWeb?external=1&openUrl=https%3A%2F%2Fbcrw.apple.com%2Furn%3Abiz%3Af07940ff-4aef-4aa5-adc5-9ae88872fd12%3Fbiz-group-id%3Ddefault%26biz-intent-id%3Dlanguage%3Ait%3Btags%3A59%3BexternalId%3A230C19E7-74DC-47F1-8751-2926DDD9D60D%26body%3DInvia%20questo%20messaggio%20per%20richiedere%20subito%20il%20tuo%20coupon%20da%203%20%E2%82%AC!%26messageId%3D75%26pushType%3D99%26source%3DinviteImePush%26medium%3D10%26campaign%3DinviteIme%26taskId%3D75&channel=1&messageId=0&pushType=75&source=push&medium=10&campaign=30&cbs=3015&content=75&channel=1",
+    "thirdUserIds": ["141fe1da9f8d2f21d6c"],
+    "title": "🎁 Buono omaggio da 3 €"
+    },
+    "needNotify": false,
+    "retryCount": 0
+}
+
+  
+
+
+
+
+  403 Forbidden
+POST https://www.googleapis.com/bigquery/v2/projects/vog-202505/datasets/tmp/tables/marketing-push-jgpush_record/insertAll?prettyPrint=false
+{
+  "code" : 403,
+  "errors" : [ {
+    "domain" : "global",
+    "message" : "Access Denied: Dataset vog-202505:tmp: Permission bigquery.datasets.get denied on dataset vog-202505:tmp (or it may not exist).",
+    "reason" : "accessDenied"
+  } ],
+  "message" : "Access Denied: Dataset vog-202505:tmp: Permission bigquery.datasets.get denied on dataset vog-202505:tmp (or it may not exist).",
+  "status" : "PERMISSION_DENIED"
+}
+
+
+vmtool -x 3 --action getInstances --className com.voghion.marketing.push.core.kafka.MarketingPushKafkaClient  --express 'instances[0].send("kfk-topic-marketing-api-push-jg-record","[{\"callBackType\":0,\"notificationState\":true,\"registrationId\":\"141fe1da9f8d2f21d6c\",\"sendCount\":2,\"sentTime\":12345667456}]")' 
+
+
+43
+19586 push
+17812  sync-task
+17812 ops       20   0   12.1g   1.2g  14232 S  22.4  3.8  20:22.40 java                                                                                                                              
+19586 ops       20   0   15.2g   2.8g  14340 S   6.0  8.9  10:27.50 java 
+
+48
+6064 push 
+6064 ops       20   0 7271316   2.5g  14304 S   8.7 15.8   7:21.13 java
+
+
+
+curl 'https://interface-test.voghion.com/comment/push/list' \
+  -H 'accept: application/json' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'clientinfo: bdbd55492a565be1423f0fa805b5d660' \
+  -H 'content-type: application/json; charset=UTF-8;' \
+  -H 'managertoken: 0' \
+  -H 'origin: https://manager-test.voghion.com' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://manager-test.voghion.com/' \
+  -H 'sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-site' \
+  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36' \
+  -H 'x-vg-user-id: 23148' \
+  -H 'x-vg-uuid: fd3a2ffa9a0a63e071bdc033b2c3c75e' \
+  --data-raw '{"pushTriggerConfigId":126,"pageNow":1,"pageSize":20}'
+
+  watch com.voghion.api.core.monitor.MonitorService monitor '{params,returnObj,throwExp}'  -n 5  -x 3 
+
+  watch com.voghion.api.core.monitor.MonitorService monitor 'target.cacheMap.size()' -n 10
+
+
+
+43为发布之前
+Partition	LogSize	Consumer Offset	Lag	Consumer Instance Owner
+0	9,375	9,375	0	kafkaMarketingDataMonitor-10.0.0.43-0-1db3d838-375c-494a-9e99-42e2d7d9fc78:/10.0.0.43
+1	8,260	8,260	0	kafkaMarketingDataMonitor-10.0.0.43-1-c47d784d-354d-4256-959a-9a2fd18b93b8:/10.0.0.43
+2	8,538	8,538	0	kafkaMarketingDataMonitor-10.0.0.43-2-6730b1ae-4a1d-496a-b827-6886efc83faa:/10.0.0.43
+3	8,925	8,925	0	kafkaMarketingDataMonitor-10.0.0.43-3-a2b93c47-c58f-44f2-801d-70a8f8d59077:/10.0.0.43
+4	9,583	9,583	0	kafkaMarketingDataMonitor-10.0.0.43-4-e4fa92be-1ea3-49a5-a7bc-594e75e2d1d5:/10.0.0.43
+5	7,883	7,883	0	kafkaMarketingDataMonitor-10.0.0.43-5-93a8dc9d-5e7b-44cd-89cf-dd111a112e3e:/10.0.0.43
+6	8,420	8,420	0	kafkaMarketingDataMonitor-10.0.0.43-6-32b56b0d-631e-4f4e-9884-a946e0f368fb:/10.0.0.43
+7	9,096	9,096	0	kafkaMarketingDataMonitor-10.0.0.43-7-446a185c-9237-4d7e-9ea7-658eb1462989:/10.0.0.43
+8	10,376	10,376	0	kafkaMarketingDataMonitor-10.0.0.48-0-02a1ae56-3551-4133-8b0e-cfef0569ce9b:/10.0.0.48
+9	8,931	8,931	0	kafkaMarketingDataMonitor-10.0.0.48-1-80acc5ee-19b5-4cfe-a750-ff329c1d5516:/10.0.0.48
+10	6,835	6,835	0	kafkaMarketingDataMonitor-10.0.0.48-2-04feedcd-e072-44af-97fc-79fecc3e825b:/10.0.0.48
+11	8,615	8,615	0	kafkaMarketingDataMonitor-10.0.0.48-3-74b93d38-0ab1-4c33-ac73-2fecbcb8b995:/10.0.0.48
+12	9,805	9,805	0	kafkaMarketingDataMonitor-10.0.0.48-4-fa162cc4-e0ad-4597-af20-4832ea3fe594:/10.0.0.48
+13	7,849	7,849	0	kafkaMarketingDataMonitor-10.0.0.48-5-796a09e2-a83a-435a-ae90-c8427fc1cc5a:/10.0.0.48
+14	10,116	10,116	0	kafkaMarketingDataMonitor-10.0.0.48-6-8bd2f52c-db4d-41c0-9b98-930521189119:/10.0.0.48
+15	11,427	11,427	0	kafkaMarketingDataMonitor-10.0.0.48-7-ae7deef2-d140-4ea7-b6a8-a233360572dc:/10.0.0.48
+
+
+rmq-topic-marketing-api-push-monitor
+Partition	LogSize	Consumer Offset	Lag	Consumer Instance Owner
+0	38,238	38,238	0	kafkaMarketingDataPushMonitor-10.0.0.43-0-d9094deb-720d-415e-a841-b98aeaad0498:/10.0.0.43
+1	34,100	34,100	0	kafkaMarketingDataPushMonitor-10.0.0.43-1-00e41984-cf46-4347-b0e2-4a0ed54f20da:/10.0.0.43
+2	34,916	34,916	0	kafkaMarketingDataPushMonitor-10.0.0.43-2-21622c76-d4ef-40fe-909b-59fd64821c98:/10.0.0.43
+3	36,712	36,712	0	kafkaMarketingDataPushMonitor-10.0.0.43-3-4523fe15-b0f9-44eb-b6ce-23f7469f5149:/10.0.0.43
+4	38,904	38,904	0	kafkaMarketingDataPushMonitor-10.0.0.43-4-86783b63-d04e-4eb3-b3fe-60244032bddc:/10.0.0.43
+5	32,043	32,043	0	kafkaMarketingDataPushMonitor-10.0.0.43-5-ea0b2414-a12e-446a-bc46-483478de1765:/10.0.0.43
+6	34,664	-1		
+7	37,999	-1		
+8	42,116	-1		
+9	36,771	-1		
+10	27,786	-1		
+11	35,622	-1		
+12	39,816	-1		
+13	31,909	-1		
+14	41,971	-1		
+15	46,586	-1		
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+重发布43后
+rmq-topic-marketing-api-monitor
+Partition	LogSize	Consumer Offset	Lag	Consumer Instance Owner
+0	9,397	9,397	0	kafkaMarketingDataMonitor-10.0.0.43-0-20a6f9ed-260c-4a0c-b511-9ac259528236:/10.0.0.43
+1	8,282	8,282	0	kafkaMarketingDataMonitor-10.0.0.43-1-bdd39d68-ad1e-4e6a-a5f0-9dc66d3ad1f8:/10.0.0.43
+2	8,555	8,555	0	kafkaMarketingDataMonitor-10.0.0.43-2-ff4c8ee1-08ef-48ce-b3af-e2b7b1536981:/10.0.0.43
+3	8,950	8,950	0	kafkaMarketingDataMonitor-10.0.0.43-3-31ead89e-00c3-455a-b2ad-189f3d6e4ef4:/10.0.0.43
+4	9,609	9,609	0	kafkaMarketingDataMonitor-10.0.0.43-4-cc6fa798-d406-47d7-ac57-4006a6c29b67:/10.0.0.43
+5	7,898	7,898	0	kafkaMarketingDataMonitor-10.0.0.43-5-65a678fa-9526-49ad-b3af-34d4de7a52e8:/10.0.0.43
+6	8,441	8,441	0	kafkaMarketingDataMonitor-10.0.0.43-6-c467137e-70ee-41a1-b2f0-8f1b3dc3d371:/10.0.0.43
+7	9,115	9,115	0	kafkaMarketingDataMonitor-10.0.0.43-7-2c194404-87b1-4306-b294-9e75f4c5983e:/10.0.0.43
+8	10,397	10,397	0	kafkaMarketingDataMonitor-10.0.0.48-0-02a1ae56-3551-4133-8b0e-cfef0569ce9b:/10.0.0.48
+9	8,952	8,952	0	kafkaMarketingDataMonitor-10.0.0.48-1-80acc5ee-19b5-4cfe-a750-ff329c1d5516:/10.0.0.48
+10	6,848	6,848	0	kafkaMarketingDataMonitor-10.0.0.48-2-04feedcd-e072-44af-97fc-79fecc3e825b:/10.0.0.48
+11	8,635	8,635	0	kafkaMarketingDataMonitor-10.0.0.48-3-74b93d38-0ab1-4c33-ac73-2fecbcb8b995:/10.0.0.48
+12	9,827	9,827	0	kafkaMarketingDataMonitor-10.0.0.48-4-fa162cc4-e0ad-4597-af20-4832ea3fe594:/10.0.0.48
+13	7,867	7,867	0	kafkaMarketingDataMonitor-10.0.0.48-5-796a09e2-a83a-435a-ae90-c8427fc1cc5a:/10.0.0.48
+14	10,147	10,147	0	kafkaMarketingDataMonitor-10.0.0.48-6-8bd2f52c-db4d-41c0-9b98-930521189119:/10.0.0.48
+15	11,455	11,455	0	kafkaMarketingDataMonitor-10.0.0.48-7-ae7deef2-d140-4ea7-b6a8-a233360572dc:/10.0.0.48
+
+rmq-topic-marketing-api-push-monitor
+Partition	LogSize	Consumer Offset	Lag	Consumer Instance Owner
+0	38,238	38,238	0	kafkaMarketingDataPushMonitor-10.0.0.43-0-73d67a8a-2251-42c9-9c1b-44f0fa9d85ea:/10.0.0.43
+1	34,100	34,100	0	kafkaMarketingDataPushMonitor-10.0.0.43-1-d9553431-cd28-4ac4-b756-e080b18146af:/10.0.0.43
+2	34,916	34,916	0	kafkaMarketingDataPushMonitor-10.0.0.43-2-5008d96d-7d25-4876-a7af-db83cd013f60:/10.0.0.43
+3	36,712	36,712	0	kafkaMarketingDataPushMonitor-10.0.0.43-3-5d5f3d18-acd9-4c15-9800-3109f44409e0:/10.0.0.43
+4	38,904	38,904	0	kafkaMarketingDataPushMonitor-10.0.0.43-4-64105c20-a745-4b16-a492-5e190e0e22d7:/10.0.0.43
+5	32,043	32,043	0	kafkaMarketingDataPushMonitor-10.0.0.43-5-e27216a9-2af9-4a87-8a27-6e2d2cafecdf:/10.0.0.43
+6	34,664	-1		
+7	37,999	-1		
+8	42,116	-1		 39392
+9	36,771	-1		
+10	27,786	-1		
+11	35,622	-1		
+12	39,816	-1		
+13	31,909	-1		
+14	41,971	-1		
+15	46,586	-1		
+
+
+2025-08-21
+成功数量 30,072,324
+失败数量
+412
+
+43 48  同时重启后  kafkaMarketingDataPushMonitor 48机器的消费这还是注册不上去
+静态成员，根据ID前缀确认为原来消费者不用在平衡，是不是partition中已有了消费所以不会再平衡，所以一致这样？
+ 
+ 新增分区看是否会再平衡？  还是没有再平衡
+ 
+问题是消费静态成员与parttion绑定无法再平衡问题？去掉静态成员名称 INSTANCE_ID
+
+
+bin/
+kafka-consumer-groups.sh \
+  --bootstrap-server 10.0.0.107:9092 \
+  --group kafkaMarketingDataPushMonitor \
+  --reset-offsets \
+  --to-offset 1 \
+  --topic rmq-topic-marketing-api-push-monitor:8 \
+  --execute
+
+  topic : TOPIC_LOGISTICS_TRACKING
+  
+
+
+  voghion://approuter/showWeb?openUrl=https%3A%2F%2Fstatic-test.voghion.com%2Fstatic%2Fwallet%2Findex.html%23%2F&hideNavigationBar=1
+  voghion://approuter/showWeb?openUrl=https%3A%2F%2Fstatic.voghion.com%2Fstatic%2Fwallet%2Fv0%2Findex.html%23%2F&hideNavigationBar=1
+
+curl 'https://console.voghion.com/comment/businessTrigger/updateStatus' \
+  -H 'accept: application/json' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'clientinfo: 3ab3b6c25e4284b36ccb10bac09486d9' \
+  -H 'content-type: application/json; charset=UTF-8;' \
+  -H 'managertoken: 0' \
+  -H 'origin: https://manager.voghion.com' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://manager.voghion.com/' \
+  -H 'sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-site' \
+  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36' \
+  -H 'x-vg-user-id: 42375' \
+  -H 'x-vg-uuid: fd3a2ffa9a0a63e071bdc033b2c3c75e' \
+  --data-raw '{"id":82,"reachId":91,"businessName":"交易-退款到钱包通知","businessId":null,"affiliatedBusiness":"交易","openPush":false,"openSms":false,"openEmail":false,"openWhatsApp":null,"openIme":false,"updateBy":"hudinghui"}'
+
+
+
+
+生成加密PDF文件代码块
+
+    public static void main(String[] args) {
+        // 示例：PDF文件只读加密功能
+        // 请确保已添加Apache PDFBox依赖
+        // <dependency>
+        //     <groupId>org.apache.pdfbox</groupId>
+        //     <artifactId>pdfbox</artifactId>
+        //     <version>2.0.27</version>
+        // </dependency>
+        
+        try {
+            // 本地PDF文件路径
+            String inputFilePath = "/Users/edy/Downloads/个人参保证明.pdf";
+            // 加密后的PDF文件路径（无需密码即可打开）
+            String outputFilePath = "/Users/edy/Downloads/个人参保证明_无需密码只读.pdf";
+            // 打开密码（设置为空字符串表示不需要密码即可打开）
+            String userPassword = "";
+            // 所有者密码（用于完全控制PDF）
+            String ownerPassword = "owner456";
+            
+            // 调用PDF只读加密方法
+            encryptPdfFile(inputFilePath, outputFilePath, userPassword, ownerPassword);
+            System.out.println("PDF文件只读加密成功！加密文件保存在：" + outputFilePath);
+            System.out.println("加密说明：无需密码即可打开文件，用户可以查看和打印，但不能复制内容或修改文件。");
+        } catch (Exception e) {
+            System.err.println("PDF文件只读加密失败：" + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * 对PDF文件进行只读加密（允许查看和打印，但禁止复制和修改）
+     * @param inputFilePath 输入PDF文件路径
+     * @param outputFilePath 输出加密PDF文件路径
+     * @param userPassword 用户密码（设置为空字符串时不需要密码即可打开）
+     * @param ownerPassword 所有者密码
+     * @throws Exception 异常信息
+     */
+    private static void encryptPdfFile(String inputFilePath, String outputFilePath, 
+                                      String userPassword, String ownerPassword) throws Exception {
+        // 使用Apache PDFBox库进行PDF加密
+        org.apache.pdfbox.pdmodel.PDDocument document = null;
+        try {
+            // 加载现有的PDF文件
+            document = org.apache.pdfbox.pdmodel.PDDocument.load(new java.io.File(inputFilePath));
+            
+            // 创建访问权限对象
+            org.apache.pdfbox.pdmodel.encryption.AccessPermission accessPermission = new org.apache.pdfbox.pdmodel.encryption.AccessPermission();
+            
+            // 设置权限：只读加密（允许查看和打印，但禁止复制和修改）
+            accessPermission.setCanPrint(true); // 允许打印
+            accessPermission.setCanExtractContent(false); // 禁止提取内容（防止复制文本）
+            accessPermission.setCanModify(false); // 禁止修改文档
+            accessPermission.setCanModifyAnnotations(false); // 禁止修改注释
+            
+            // 创建标准加密参数
+            org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy protectionPolicy = 
+                new org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy(ownerPassword, userPassword, accessPermission);
+            
+            // 设置密钥长度（可以是40、128或256位）
+            protectionPolicy.setEncryptionKeyLength(128);
+            
+            // 应用加密保护
+            document.protect(protectionPolicy);
+            
+            // 获取文档信息对象，用于设置标题
+            org.apache.pdfbox.pdmodel.PDDocumentInformation documentInfo = document.getDocumentInformation();
+            String originalTitle = documentInfo.getTitle();
+            
+            // 提取文件名（不包含扩展名）作为基础标题
+            String fileName = new java.io.File(inputFilePath).getName();
+            int dotIndex = fileName.lastIndexOf('.');
+            String baseTitle = (dotIndex > 0) ? fileName.substring(0, dotIndex) : fileName;
+            
+            // 如果没有原始标题或原始标题为空，则使用文件名作为标题
+            if (originalTitle == null || originalTitle.trim().isEmpty()) {
+                originalTitle = baseTitle;
+            }
+            
+            // 设置新的标题，在标题后添加"(已加密)"
+            documentInfo.setTitle(originalTitle + " (已加密)");
+            
+            // 保存加密后的PDF文件
+            document.save(outputFilePath);
+        } finally {
+            // 关闭文档
+            if (document != null) {
+                document.close();
+            }
+        }
+    }
+
+
+
+topic: rmq-topic-marketing-api-whatsapp-low-priority
+group:kf-consumer-marketing-whatsapp-low-property
+
+topic:rmq-topic-marketing-api-sms-low-priority
+group:kf-consumer-marketing-sms-low-property
+
+topic:kfk-topic-marketing-api-push-low-priority
+group:consumer-kfk-marketing-push-low-property
+
+topic:rmq-topic-marketing-api-push-high-priority
+group:consumer-marketing-push-high-property-new
+
+"language",
+"country",
+"deviceCode",
+"appSystem",
+"currency"
+
+千人千面邮件的主题要设置变量，可以自定义参数
+{"content":{"html":"{{{custom_html}}}","subject":"这时一个邮件主题{{{custom_title}}}"},"from":{"email":"customer@voghion.sg","name":"Voghion Official Team"},"recipients":[{"address":{"email":"2697195570@qq.com"},"substitutionData":{"custom_title":"官方营销主题","custom_html":"<div>holle1</div>"}}],"requestId":"666660c95d6c8-2232-4cd3-a884-833358eec00c","transactional":false}
+
+
+
+
+info.2025-10-21.11.log.gz:2025-10-21 08:50:34.152 [D19A9614C79742A38660D92051101858] [auto-task-threadjob-executor-pool-1] INFO  c.v.m.p.c.s.e.s.MarketingAutoEmailUserLabelSendingStrategy [doSending,114] [] - email user label sending LabelName:784 , watch:执行次数 count = 22504,执行总数 sum = 112161,过滤总数 filter = 0,获取总数 fetchNum = 112286,发送总数 sendCount = 0,用户总数 userCount = 87538,标签总数 labelCount = 112286,执行耗时 duration = 2604186 毫秒
+info.2025-10-21.16.log.gz:2025-10-21 09:24:50.779 [D19A9614C79742A38660D92051101858] [auto-task-threadjob-executor-pool-1] INFO  c.v.m.p.c.s.e.s.MarketingAutoEmailUserLabelSendingStrategy [doSending,114] [] - email user label sending LabelName:787 , watch:执行次数 count = 25637,执行总数 sum = 122249,过滤总数 filter = 0,获取总数 fetchNum = 127962,发送总数 sendCount = 0,用户总数 userCount = 58853,标签总数 labelCount = 127962,执行耗时 duration = 2056627 毫秒
+info.2025-10-21.17.log.gz:2025-10-21 09:41:36.692 [D19A9614C79742A38660D92051101858] [auto-task-threadjob-executor-pool-1] INFO  c.v.m.p.c.s.e.s.MarketingAutoEmailUserLabelSendingStrategy [doSending,114] [] - email user label sending LabelName:788 , watch:执行次数 count = 28287,执行总数 sum = 56737,过滤总数 filter = 0,获取总数 fetchNum = 141215,发送总数 sendCount = 0,用户总数 userCount = 14036,标签总数 labelCount = 141215,执行耗时 duration = 1005913 毫秒
+info.2025-10-21.9.log.gz:2025-10-21 08:07:09.965 [D19A9614C79742A38660D92051101858] [auto-task-threadjob-executor-pool-1] INFO  c.v.m.p.c.s.e.s.MarketingAutoEmailUserLabelSendingStrategy [doSending,114] [] - email user label sending LabelName:785 , watch:执行次数 count = 28786,执行总数 sum = 143684,过滤总数 filter = 0,获取总数 fetchNum = 143724,发送总数 sendCount = 0,用户总数 userCount = 120829,标签总数 labelCount = 143724,执行耗时 duration = 4029644 毫秒
+
+
+push 系统紧急重新操作步骤
+1、停job
+2、新增任务
+3、观察日志、后台，无任务
+4、重发布
+5、开启job
+
+zgrep 's diff:' info.2025-11-03.9.log.gz |tail -n 10 | sed -n 's/.*\[\([^]]*\)\].*/\1/p' | awk 'BEGIN{count=0} {n=split($0, arr, ","); count += n} END{print "所有集合元素总数:, count}'
+
+zgrep 's diff:' info.2025-11-03.*.log.gz | sed -n 's/.*s diff:\[\([^]]*\)\].*/\1/p' | awk 'BEGIN{count=0} {n=split($0, arr, ","); count += n} END{print "所有集合元素总数:", count}'
+
+zgrep 'findReachUserBaseVOByDeviceCodeAndUserIds diff:' info.2025-11-03.*.log.gz | sed -n 's/.*findReachUserBaseVOByDeviceCodeAndUserIds diff:\[\([^]]*\)\].*/\1/p' | awk 'BEGIN{count=0} {n=split($0, arr, ","); count += n} END{print "所有集合元素总数:", count}'
+
+
+trace -E com.voghion.api.core.https.clients.HttpClientDelegator doPost -n 5  --skipJDKMethod false '1==1'
+
+编辑
+trace -E com.voghion.api.core.https.clients.HttpClientDelegator doPost \
+  --condition-express 'params[0] != null && params[0].contains("http://10.1.0.3/email-builder/build-email-html")' \
+  -n 5 --skipJDKMethod false
+
+
+  trace -E com.voghion.api.core.https.clients.HttpClientDelegator doPost -n 5  --skipJDKMethod false '1==1'
+trace -E com.voghion.api.core.https.clients.HttpClientDelegator doPost \
+  --condition-express 'params[0] != null && params[0].contains("http://10.1.0.3/email-builder/build-email-html")' \
+  -n 5 --skipJDKMethod false
+
+
+  trace -E com.voghion.api.core.https.clients.HttpClientDelegator doPost -n 5  --skipJDKMethod false -condition-express 'params[0].contains("http://10.1.0.3/email-builder/build-email-html"'
+vmtool -x 3 --action getInstances --className com.voghion.api.core.https.clients.HttpClientDelegator  --express 'instances[0].doPost(" "," ",(new org.apache.http.Header[]{@com.alibaba.fastjson.JSON@parseObject("{}",@org.apache.http.Header@class)}))' 
+
+
+
+trace com.example.UserService process 'params[0].contains("test")'
+
+ trace com.voghion.api.core.https.clients.HttpClientDelegator doPost condition-express 'params[0]=="http://10.1.0.3/email-builder/build-email-html"' -n 5  --skipJDKMethod false
+
+trace com.voghion.api.core.https.clients.HttpClientDelegator doExecute 'params[0] != null && params[0].uri != null && params[0].uri.toString().contains("http://10.1.0.3/email-builder/build-email-html")'
+
+32211 voghion-marketing-push-admin-20251111062157.jar --spring.config.location=./config/ -Xms256m -Xmx512m -Xmn168m -Xss256k
+
+
+
+aaSoo callback request: CallbackRequest
+type=SUBSCRIBED
+
+appId
+业务场景
+消息类型 push email sms
+
+
+toUserid
+language
+title
+content
+icon
+skipUrl
+
+Office@321
+
+
+{"notification":{"android":{"alert":"测试内容","large_icon":"https://g-images.voghion.com/productImages/675_1712633684808_voghion1024x1024.png","title":"测试标题2","intent":{"url":"https://www.voghion.com/order/2024020509103102550084"}},"ios":{"badge":"+1","alert":{"title":"测试标题2","body":"测试内容"},"extras":{"image":"https://g-images.voghion.com/productImages/675_1712633684808_voghion1024x1024.png","path":"https://www.voghion.com/order/2024020509103102550084"},"mutable-content":true}},"audience":{"registration_id":["1a0018970b83aab97f4"]},"options":{"third_party_channel":{"fcm":{"distribution":"secondary_push"},"huawei":{"distribution":"secondary_push"},"xiaomi":{"distribution":"secondary_push"}},"apns_production":false},"callback":{},"platform":"all"}
+{"notification":{"android":{"alert":"测试内容","large_icon":"https://g-images.voghion.com/productImages/675_1712633684808_voghion1024x1024.png","title":"测试标题","intent":{"url":"https://www.voghion.com/order/2024020509103102550084"}},"ios":{"badge":"+1","alert":{"title":"测试标题","body":"测试内容"},"extras":{"image":"https://g-images.voghion.com/productImages/675_1712633684808_voghion1024x1024.png","path":"https://www.voghion.com/order/2024020509103102550084"},"mutable-content":true}},"audience":{"registration_id":["1a0018970b83aab97f4"]},"options":{"third_party_channel":{"fcm":{"distribution":"secondary_push"},"huawei":{"distribution":"secondary_push"},"xiaomi":{"distribution":"secondary_push"}},"apns_production":false},"callback":{},"platform":"all"}
+{"notification":{"android":{"alert":"测试内容","large_icon":"https://g-images.voghion.com/productImages/675_1712633684808_voghion1024x1024.png","title":"测试标题2","intent":{"url":"https://www.voghion.com/order/2024020509103102550084"}},"ios":{"badge":"+1","alert":{"title":"测试标题2","body":"测试内容"},"extras":{"image":"https://g-images.voghion.com/productImages/675_1712633684808_voghion1024x1024.png","path":"https://www.voghion.com/order/2024020509103102550084"},"mutable-content":true}},"audience":{"registration_id":["1a0018970b83aab97f4"]},"options":{"third_party_channel":{"fcm":{"distribution":"secondary_push"},"huawei":{"distribution":"secondary_push"},"xiaomi":{"distribution":"secondary_push"}},"apns_production":false},"callback":{},"platform":"all"}
+
+
+1743 × 4 + 1003 × 3 + 301 × 2 + 54 + 1418 × 5 + 514 × 5 + 693 × 4 + 378 × 3 + 102 × 2 + 14 + 853 × 5 + 1074 × 4 + 553 × 3 + 184 × 2 + 37
+
+
+32 + 176 × 2 + 571 × 3 + 942 × 4 + 800 × 5 + 2304 × 5 + 2947 × 4 + 1683 × 3 + 540 × 2 + 97
+
+
+1、工作内容完成总结
+  1、确认根据设备统计push次数方案及代码开发，push发送评率获取数据到BQ，配合数据部门监控验证数据准确性和异常数据排查
+  2、触达系统对消息处理较多的topic由rocketMQ迁到kafka ，提升系统吞吐
+  3、运营后台功能优化：提供导出服务对任务在表格中进行统计分析
+  4、业务触达场景新增及已有场景优化：派送失败、到达未取等优化触发通知，新增退款到钱包等场景
+  5、新接入edm渠道，为运营提供多样性选择，同时监控检验新渠道发送数据等
+  6、邮件任务发送topic消息堆积问题持续优化，从根据邮件类型进行topic分离到批量消费信息再到对请求链路的各个阶段性能优化
+  7、历史数据问题修正，对获取设备信息从faUserPush切deviceExtInfo，完成整个系统设计场景的排查梳理及最终的切换，保证不影响原有逻辑
+  8、参与大促盲盒活动关于订阅活动提醒的支持，提高活动的整体uv
+  9、新APP卖家中心APP的push通知触达支持，兼容flutter客户端通知消息体。
+
+2、优势与不足
+  1、工作认真负责，对问题考虑比较全面
+  2、系统的整体框架比较了解，但是对一些细节处的容易遗漏，在排查问题时不能快速定位，需要按业务流程依次排查确认。
+  1、太过谨慎容易将简单问题复杂化
+  2、缺乏非技术性的主动沟通，可能导致对业务需求的理解存在差异。
+
+3、建议与支持
+  近期主要是在熟悉和处理触达的业务逻辑，对触达的依赖系统了解不足如，推荐系统如何对用户选择指定类目和商品进行触达提醒进而提升触达的有效性等
+  希望对这些的了解实现对业务由点到线的认知转变
+
+4、工作方向和目标
+系统稳定性方面
+可观测性 & 运维效率
+业务协同
+
+
+
+
+
+
+1、实现基于设备维度的 Push 发送频次统计方案，完成数据采集链路开发，将 Push 发送频率数据同步至 BigQuery，协同数据团队完成数据准确性验证及异常数据根因排查，为精细化运营提供可靠数据支撑。
+2、主导核心消息处理 Topic 从 RocketMQ 迁移至 Kafka，显著提升触达系统的吞吐能力与横向扩展性，保障系统稳定性。
+3、优化运营后台功能体验，新增任务导出与多维统计分析能力，支持运营人员在表格中对触达任务进行高效复盘与效果评估，提升运营决策效率。
+4、拓展并优化业务触达场景：针对“派送失败”“到达未取”“评价提醒”“客服回复”“客服操作寄回”等关键履约节点和服务场景，优化触发逻辑与通知策略和通知类型；同时新增“退款到账钱包”等新业务场景的触达支持，提升用户感知与服务能力。
+5、成功接入 EDM（邮件）新触达渠道Mamba，丰富运营触达手段，增强消息通道多样性；同步建立新渠道的数据监控与质量校验机制，确保发送成功率与数据一致性。
+6、系统性解决邮件任务 Topic 消息堆积问题：通过邮件类型拆分 Topic、引入批量消费机制，并对请求链路各阶段（如模板渲染、SMTP 调用、重试逻辑）进行性能调优，实现积压量下降 90%+，投递延迟显著降低。
+7、完成设备信息获取逻辑的架构升级：将原依赖 faUserPush 的设备信息查询统一迁移至 deviceExtInfo 服务，全面梳理相关业务场景，制定平滑切换方案，在零故障前提下完成全量切换，保障系统兼容性与数据一致性。
+8、支持大促“盲盒活动”订阅提醒功能，高效完成触达链路对接，助力活动 UV 提升，为营销转化提供关键技术保障。
+9、完成新 APP（卖家中心）Push 触达能力建设，适配 Flutter 客户端的消息体格式与推送规范，实现跨技术栈的无缝兼容，支撑多端统一触达体验。
+10、各触达渠道费用账单的自动化抓取，提升运行分析roi的效率，提过运营的决策能力
+
+对待任务认真负责，注重交付质量，在设计和开发过程中能从多角度考虑潜在风险与边界情况，保障系统健壮性。
+面对部分简单场景，倾向于预设过多异常路径，可能导致方案复杂度高于实际需求。同时在非技术协作场景（如需求澄清、排期协调）中较少主动发起沟通，存在因信息不对称导致理解偏差的风险。
+
+目前对触达系统的内部逻辑相对熟悉，但对它如何与推荐、用户画像等依赖系统联动以提升触达有效性的理解还不够深入。希望能有机会更系统地了解这些协同机制，从而从‘完成任务’转向‘驱动业务结果’，真正实现技术价值与业务目标的对齐。
+
+系统稳定性：打造高可靠、高可用的触达核心链路,持续优化消息积压处理机制,推进关键依赖的容灾能力建设.
+业务协同：深入理解依赖系统协作逻辑，掌握触发策略、用户兴趣、内容生成、效果反馈的全链路；完善数据统计，结合数据进行有效复盘与优化。
+
+
+为了支持营销费用统计，需按天维度汇总各账号当日发送邮件所产生的消费金额，并提供一个数据查询接口。接口返回的数据应包含以下字段：
+日期：费用发生的日期（格式：YYYY-MM-DD）
+消费账户：产生费用的邮件发送账户
+消费金额：当日该账户的总消费金额
+结算币种（：费用对应的结算货币（如 USD、EUR 等）
+
+
+卖家中心APP支持对应场景推送通知需求自测联调
+1、兼容安卓系统中flutter原生push获取推送内容问题
+2、voghion客户端（andriod、iOS）push业务触达、营销任务场景梳理及回归测试验证
+
+查询用户设备信息埋点统计，查看还只在fa_user_push表的设备数量和比例。
+运营后台push配置条件查询优化代码开发
+渠道费用自动化抓取
+渠道费用自动获取需求梳理与对接：
+1、Ycloud渠道有对应账单接口，已完成代码开发
+2、其他渠道对接中
+
+高效完成消息中间件迁移、设备信息架构升级与多渠道触达能力建设，显著提升系统稳定性、扩展性及精细化运营决策效能。
+
+
+
+
+
+
+
+
+
+findReachUserBaseVOByDeviceCodes 方法分析，结论：可以完全切deviceCode
+  deviceExt查不到的到部分在faUser也查不到： 有diff查不到的设备号个数-1718；fasize查不到表示fa_user也没有数据 的个数-312；其他fauser能查出数据
+  随机找在device_ext_info查不到的数据都是大写的deviceCode：24-4月份前数据 device_ext_info 是接的2024-04-11 09:55:54月后的数据
+
+findReachUserBaseVOByDeviceCodeAndUserIds方法分析： 
+  查不到的数据数据为24-4月前数据，或者对应的user中没有邮箱的数据,或者在查询user后根据发送发动评率的那个过滤没有对应的userId.
+
+protected List<Map<String,String>>  buildToUserEmailAddressArrayByUsers(Map<String, ReachUserBaseVO> deviceCodesMap, List<String> deviceCodes,MailMessageList mailMessageList) {
+        Map<Integer, ReachUserBaseVO>  reachUserBaseVOMap = deviceCodesMap.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toMap(ReachUserBaseVO::getUserId, e -> e));
+        if(reachUserBaseVOMap.isEmpty()){
+            log.info("faUserPusheMap is empty {}", deviceCodes);
+            return null;
+        }
+        if(StringUtils.isNotBlank(mailMessageList.getVoghionTemplateId())){
+            log.info("test build array log {},{}", JSONObject.toJSONString(deviceCodesMap),JSONObject.toJSONString(deviceCodes));
+        }
+        // 先把 userId -> User 映射起来，方便快速查找
+        Map<Long, User> userIdMap = deviceCodesMap.entrySet().stream()
+                .filter(Objects::nonNull)
+                .filter(u -> u.getValue().getUserId() != null )
+                .collect(Collectors.toMap(l->Long.valueOf(l.getValue().getUserId()), u -> u.getValue().getUser(), (v1, v2) -> v1));
+
+        Map<String, User> deviceUserMap = deviceCodesMap == null ? null :
+                deviceCodesMap.values().stream()
+                        .filter(Objects::nonNull)
+                        .filter(e -> e.getUserId() != null)
+                        .filter(e -> StringUtils.isNotBlank(e.getDeviceCode()))
+                        .collect(Collectors.toMap(
+                                ReachUserBaseVO::getDeviceCode,
+                                ReachUserBaseVO::getUser,
+                                (v1, v2) -> v1
+                        ));
+        Map<String, String> htmlMap = StringUtils.isNotBlank(mailMessageList.getVoghionTemplateId()) ? buildH5Content(deviceCodesMap,mailMessageList,deviceUserMap) : null;
+        List<Map<String,String>> result = userIdMap.values().stream()
+                .filter(Objects::nonNull)
+                .filter(e -> StringUtils.isNotBlank(e.getEmail()) && EmailUtils.isEmail(e.getEmail()))
+                .filter(e -> {
+                    if(StringUtils.isBlank(mailMessageList.getVoghionTemplateId())){
+                        return true;
+                    }
+                    if(reachUserBaseVOMap.get(e.getId().intValue()) == null){
+                        log.info("faUserPushMap.get(e.getId().intValue()) is null {}", e.getId());
+                        return false;
+                    }
+                    if(!reachUserBaseVOMap.containsKey(e.getId().intValue())){
+                        log.info("faUserPushMap containsKey false {}", e.getId());
+                        return false;
+                    }
+                    if(StringUtils.isBlank(getValue(e, htmlMap, reachUserBaseVOMap))){
+                        log.info("getValue is blank {}", e.getId());
+                        return false;
+                    }
+                    return true ;
+                })
+                .map(e -> {
+                    ReachUserBaseVO temp = reachUserBaseVOMap.get(e.getId().intValue());
+                    Map<String, String> map = Maps.newHashMap();
+                    map.put("email", e.getEmail());
+                    map.put("lang", temp==null ? LanguageEnums.EN.getKey().toUpperCase() : getLanguageEffective(temp.getLanguage().toUpperCase()));
+                    if(StringUtils.isNotBlank(mailMessageList.getVoghionTemplateId())){
+                        map.put("html", getValue(e, htmlMap, reachUserBaseVOMap));
+                        map.put("title", addNickNameForTitle(mailMessageList.getMailContentTitle(), e.getNickName()));
+                    }
+                    return map;
+                }).collect(Collectors.toList());
+        if(htmlMap!= null){
+            htmlMap.clear();
+        }
+        return result;
+    }
+
+
+List<SendChannel> channels = Arrays.asList(
+                new SendChannel(MarketingReachDomainEnums.EMAIL.getDomain(), () -> sendingEmailMulti(user, orderAddressExt, order, language, orderDetailGoodsList, null, DateUtils.localDateTimeToString(vo.getEventDate()))),
+                new SendChannel(MarketingReachDomainEnums.PUSH.getDomain(), () -> sendingPush(userId, reachUserBaseVO.getDeviceCode(), language, order.getShowOrderId(), orderAddressExt, orderDetailGoodsList)),
+                new SendChannel(MarketingReachDomainEnums.WHATSAPP.getDomain(), () -> sendingWhatsApp(user, orderAddressExt, order, language, vo.getEventDate(), orderDetailGoodsList)),
+                new SendChannel(MarketingReachDomainEnums.IMESSAGE.getDomain(), () -> {
+                    saveMessageSendRecord(marketingReachEnum().getReachId(), "deliveredNotice", JSONObject.toJSONString(vo), 50, orderDetailGoodsList.get(0).getShowDetailId(), messageId);
+                    sendImessage(vo, orderAddressExt, order, orderDetailGoodsList, reachUserBaseVO, DateUtils.localDateTimeToString(vo.getEventDate()));
+                }),
+                new SendChannel(MarketingReachDomainEnums.SMS.getDomain(), () -> {
+                    saveMessageSendRecord(marketingReachEnum().getReachId(), "deliveredNotice", JSONObject.toJSONString(vo), 20, orderDetailGoodsList.get(0).getShowDetailId(), messageId);
+                    sendingSmsMulti(user,order.getShowOrderId(), orderAddressExt, language, orderAddressExt.getCountryName(), orderDetailGoodsList.get(0).getShowDetailId());
+                })
+                );
+        //MarketingReachSendCategory 根据parentId递归且排序到list中
+        LinkedHashMap<Integer, Integer> priorityMap = new LinkedHashMap<>(marketingReachSendCategoryCache.getPriorityChannels(marketingReachEnum().getReachId()));
+        for (SendChannel channel : channels) {
+            try {
+                if (marketingSendCategoryDecisionService.isProcessingSource(marketingReachEnum().getReachId(), channel.getDomain(), null, messageId, priorityMap, orderDetailGoodsList.get(0).getShowDetailId())) {
+                    channel.getAction().run();
+                }
+            } catch (Exception e) {
+                log.error("【{}】sending {} fail.", getStage().getDesc(), channel.getDomain(), e);
+            }
+        }
+
+
+
+
+
+  
+
+
+
+
+
+
+{
+    "q_total_user": 0,
+    "w_total_user": 0,
+    "itime": 1769752800,
+    "i_total_user": 0,
+    "platform": "all",
+    "push_type": 8,
+    "data_msgtype": 1,
+    "notification": {
+        "android": {
+            "alert": "Post a review to unlock your reward instantly.",
+            "title": "🎁 Up to €5 Reward – Claim Now!",
+            "intent": {
+                "url": "voghion://approuter/orderDetail?orderId=2026012909031112580090&messageId=0&pushType=3&source=push&medium=10&campaign=10&cbs=1013&content=3&channel=1&showDetailIds=G20260129090311125800902&orderId=2026012909031112580090"
+            }
+        },
+        "ios": {
+            "badge": "+1",
+            "alert": {
+                "body": "Post a review to unlock your reward instantly.",
+                "title": "🎁 Up to €5 Reward – Claim Now!"
+            },
+            "extras": {
+                "path": "voghion://approuter/orderDetail?orderId=2026012909031112580090&messageId=0&pushType=3&source=push&medium=10&campaign=10&cbs=1013&content=3&channel=1&showDetailIds=G20260129090311125800902&orderId=2026012909031112580090"
+            },
+            "mutable-content": true
+        }
+    },
+    "request_time": 1769752800953,
+    "total_user": 1,
+    "api_type": 32,
+    "options": {
+        "third_party_channel": {
+            "fcm": {
+                "distribution": "secondary_push"
+            },
+            "huawei": {
+                "distribution": "secondary_push"
+            },
+            "xiaomi": {
+                "distribution": "secondary_push"
+            }
+        },
+        "apns_production": true,
+        "time_to_live": 86400
+    },
+    "client_ip": "10.74.3.127",
+    "msg_id": "18102856136874304",
+    "send_source": 0,
+    "audience": {
+        "registration_id": [
+            "120c83f7610d29a716b"
+        ]
+    },
+    "errno": 0,
+    "business_operation_code": "",
+    "h_total_user": 0,
+    "is_vip": 1,
+    "a_total_user": 1,
+    "receive_time": 1769752800,
+    "appkey": "4a3534852dd0a0b91376601d"
+}
+
+
+myzpena@hotmail.com
+DkDAY9KxRB
+
+订单                         表中确认收货时间      评论时间                手动确认收货时间 日志查询
+G20260129153147165200803 2026-02-09 10:58:30  2026-02-09 15:57:06   2026-02-09 15:55:08.405
+G20260126153157907700972 2026-02-05 12:06:00  2026-02-05 15:30:53   2026-02-05 15:27:48.310
+G20260125193914904900123 2026-02-06 16:18:51  2026-02-06 15:46:05
+G20260124113935029300294 2026-02-04 15:42:52  2026-02-08 00:16:02
+G20260124004642907700776 2026-02-04 14:54:17  2026-02-09 04:45:46
+G20260123024335034900242 2026-02-04 11:56:17  2026-02-06 20:55:16   2026-02-06 20:53:35.110
+G20260122104930904900963 2026-02-09 14:13:53  2026-02-09 14:15:56   2026-02-09 14:13:53.031
+G20260116133354911000442 2026-02-03 21:36:33  2026-02-05 11:51:35
+G20260115093540063200814 2026-02-02 20:20:09  2026-02-06 20:23:40
+G20260112185812904900443 2026-02-06 20:23:34  2026-02-06 17:25:05   2026-02-06 17:24:06.101
+
+pppe-296
+
+
+
+父亲： 胡定辉 上海月迹信息科技公司 18638884153
+母亲： 师孟真  上海美特斯邦威服饰股份有限公司 13193895237
+
+学籍号都填了，上面一个是全国学籍号，下面一个是上海市学籍号。
+
+查看内存占用
+jmap -heap 2869
+导出dump文件
+jcmd 2869 GC.dump -all=true filename=heap_dump.hprof
+
+
+
+
+
+
+核心任务
+分析现有代码，设计并实现一个通用的用户触达通知系统。
+第一步：代码分析与功能归纳
+输入: 根据选择的类的代码、相关的 Service 实现代码以及调用这些 Service 的代码。
+AI 任务:
+解析这些代码。
+分析 Service 层的具体实现逻辑，特别更具体渠道的自定义参数相关的部分。
+总结归纳出当前业务中实现的几种具体触达场景及其业务特点。
+第二步：通用触达场景设计
+基于第一步的分析，设计一个全新的、通用的触达功能。
+核心目标: 能够处理临时、突发的大量用户触达需求，而不必为每种新场景都开发新的代码。
+设计规范:
+接口规范:
+定义一个 rocketmq的消息消费入口，用户接收业务推送的通用触达消息体。注意一次消息的发送单元一个一个，如一个用户、一个订单等，不需要考虑一个消息中批量的问题。
+消息体必须包含一个标准化的 JSON 结构，用于描述本次触达的关键参数。
+接口范围:
+支持的触达渠道: 应支持第一步分析的代码中所有的渠道。
+消息模板与参数: 根据不同渠道组装需要发送的内容，如文本或模版等；同时经可能多的支持一个高度灵活的 params 字段，允许传入任意数量和类型的自定义参数来填充文本或模板。
+自定义参数支持:
+params 字段应设计为一个 Map<String, String> 类型，统一对应的自定参数。
+第三步：具体实现
+请提供完整的代码实现。
+代码应易于扩展，当需要增加新的触达渠道时，只需注入到策略分派器中即可。
+最终输出
+请按上述设计思路，提供 rocketmq消息体的定义，消息的消费及具体的各个渠道的实现。
+
+
+请根据以下三个文件路径中的代码，分析现有代码并设计实现一个通用的用户触达通知系统：
+
+第一步：代码分析与功能归纳
+- 分析以下三个Java文件中的代码：
+  - /Users/edy/devople/ideaProjects/voghion-marketing-push/voghion-marketing-push-admin/src/main/java/com/voghion/marketing/push/admin/consumer/business/TradeConsumers.java
+  - /Users/edy/devople/ideaProjects/voghion-marketing-push/voghion-marketing-push-admin/src/main/java/com/voghion/marketing/push/admin/consumer/business/MerchantConsumers.java  
+  - /Users/edy/devople/ideaProjects/voghion-marketing-push/voghion-marketing-push-admin/src/main/java/com/voghion/marketing/push/admin/consumer/business/UserConsumers.java
+
+- 深入解析Service层的具体实现逻辑，特别关注渠道相关的自定义参数处理部分
+- 总结归纳出当前业务中实现的几种具体触达场景及其业务特点（如用户注册、订单状态变更、物流跟踪、VIP等级变更等）
+
+第二步：通用触达场景设计
+基于第一步的分析，设计一个全新的、通用的触达功能，核心目标是能够处理临时、突发的大量用户触达需求，而无需为每种新场景开发新代码。
+
+设计规范要求：
+- 接口规范：定义一个RocketMQ消息消费入口，用于接收业务推送的通用触达消息体（每次处理单个消息单元，如单个用户、单个订单等）
+- 消息体必须包含标准化的JSON结构，用于描述本次触达的关键参数
+- 支持所有在第一步分析中发现的触达渠道（邮件、短信、推送、IM等）
+- 消息模板与参数：根据不同渠道组装需要发送的内容（文本或模板），尽可能多地支持一个高度灵活的params字段，允许传入任意数量和类型的自定义参数来填充文本或模板
+- 自定义参数支持：params字段应设计为Map<String, String>类型，统一对应自定义参数
+
+第三步：具体实现
+- 提供完整的代码实现，确保代码易于扩展，当需要增加新的触达渠道时，只需注入到策略分派器中即可
+- 实现应包括：RocketMQ消息体定义、消息消费处理器、各渠道的具体实现策略
+
+最终输出：按照上述设计思路，提供RocketMQ消息体定义、消息消费处理逻辑及各个渠道的完整实现代码。
+
+
+
+1. 代码实现要求：
+   - 创建一个新的MQ消费者类来处理通用业务触达消息
+   - 定义通用消息体数据接口，支持场景编码、主键信息和自定义参数Map
+   - 实现通用业务编排服务，负责拉取场景配置、补齐系统数据、组装各渠道发送参数
+   - 特别关注WhatsApp渠道的参数映射逻辑，确保参数个数和顺序与模板一致
+
+2. 技术架构要求：
+   - 遵循现有的项目结构和包命名规范
+   - 使用项目中已有的工具类和枚举类型
+   - 保持与现有消费者类（如UserConsumers、TradeConsumers）类似的代码风格
+   - 确保代码具有良好的错误处理和日志记录机制
+
+3. 输出格式：
+   - 提供完整的Java类代码实现
+   - 包含必要的注释说明关键逻辑
+   - 说明各个方法的具体职责和参数含义
+
+4. 质量标准：
+   - 代码应具备良好的可扩展性和维护性
+   - 符合项目的编码规范和最佳实践
+   - 确保线程安全和性能考虑
+5.特别要求：
+   -消息消费的入口在VoghionCommonReachConsumers中重新编写修改
+   -消息体的数据结构的类在VoghionCommonReachVO中重新编写，忽略原来的字段
+   -具体实现Service重写在CommonReachServiceImpl类中，忽略原来的代码
+
+
+ /**
+         * 1、先根据ShowOrderId 或 ShowDetailId 获取UserId;
+         *      1.1、如果存在ShowOrderId 时，查询order信息,根据orderId获取子订单，取第一个子订单获取ShowDetailId；
+         *      1.2、如果存在ShowDetailId 时，查询OrderDetailGoods信息，获取orderId查询ShowOrderId；
+         * 2、如果参数不存在替换获取的userId,根据UserId获取用户基础信息，补齐 userId/deviceCode/country/language
+         *
+         * showDetailId可查 OrderDetailGoods goods = tradeRemoteServiceFactory.orderGoodsQueryByShowOrderId(ctx.getShowDetailId());
+         * ShowOrderId 可查 OrderOutput order = tradeRemoteServiceFactory.orderQueryByShowOrderId(ctx.getShowOrderId()); 查到OrderOutput不需要去重复查OrderAddressExt
+         *
+         */
+
+
+         阅读com.voghion.marketing.push.admin.consumer.business包下的除去VoghionCommonReachConsumers类的其他所有的类，以及类中依赖的所有相关方法，全面的阅读理解这块的业务功能。梳理总结出各个业务场景中不同渠道的自定义字段有哪些，分别有什么业务字段从哪里获取到的这些自定义字段。
+输出内容：按如下格式整理出梳理的结果： 
+所属业务-MarketingReachBusinessEnum.TADE   业务场景-MarketingReachEnums.TRADE_COMMENT_NOTICE  渠道自定义字段：1、push: userName 通过userId查询User获取 ，表示用户名称2、email: orderId 通过showDetailId查询GoosDetailOrder获取，表示展示给用户的主订单号
+
+
+
+grep '业务触达消息准备发送】 marketingSendPriority' info.log | grep 'TRADE_COMMENT_ALL_REWARD_NOTICE'
+grep '业务触达消息准备发送】 marketingSendPriority' info.log | grep 'TRADE_COMMENT_NOTICE'
+
+
+https://console-test.voghion.com/comment/businessTrigger/configList  接口新增字段 remark：备注 customParamMap:自定义参数（key：参数字符 Value：参数描述）
+https://console-test.voghion.com/comment/businessTrigger/saveConfig 新增接口，支持业务触达的配置的新增和修改 
+
+各个渠道配置查询接口： 新增字段 skipType：转跳类型  allow：是否支持
+https://console-test.voghion.com/comment/businessTrigger/pushConfig 
+https://console-test.voghion.com/comment/businessTrigger/emailConfig
+https://console-test.voghion.com/comment/businessTrigger/smsConfig
+https://console-test.voghion.com/comment/businessTrigger/whatsAppConfig  单独新增字段  templateParamMap：模版自定以参数("templateParamMap":{"bodyParamKeys":["userName"],"headerParamKey":["orderId","amount"],"buttonParamKey":["url"]}) 
+https://console-test.voghion.com/comment/businessTrigger/imeConfig
+
+各渠道配置新增/修改接口：新增字段跟查询结果中字段一样
+https://console-test.voghion.com/comment/businessTrigger/savePushConfig 
+https://console-test.voghion.com/comment/businessTrigger/saveEmailConfig
+https://console-test.voghion.com/comment/businessTrigger/saveSmsConfig
+https://console-test.voghion.com/comment/businessTrigger/saveWhatsAppConfig  
+https://console-test.voghion.com/comment/businessTrigger/saveImeConfig
+
+
+https://console-test.voghion.com/comment/businessTrigger/pushSkipTypes push渠道的转跳页面类型
+https://console-test.voghion.com/comment/businessTrigger/pushSkipTypes 其他渠道的转跳页面类型（onelink页面类型）
+
+https://console-test.voghion.com/comment/businessTrigger/common/fields  通用场景支持字段
+https://console-test.voghion.com/comment/businessTrigger/common/customParams 根据字段查询可支持的自定义数据
+
+1.局限角色范围2.明确工作内容3.确定工作边界4.定义结果衡量或验收方式，给去量化指标5.惩罚策略，训练模型
+
+
+1、明确角色范围
+2、任务背景（梳理代码理解原有需求、编写需求）
+3、明确实现功能
+4、明确任务边界（明确不要怎么做）
+5、代码规范（具体哪些地方编写代码）
+6、定义结果衡量标准
+
+
+后端服务每次调试都要重新启动服务进行验证，将其改为热部署，代码调整可以直接进行测试验证。实现该功能并完善相关的技术文档和操作文档
+
+针对当前车辆管理系统(carM)的后端Spring Boot服务，需要实现热部署功能以提高开发效率。目前每次代码修改都需要重新启动整个服务才能验证更改，这严重影响了开发调试速度。
+
+请实现以下功能：
+1. 配置Spring Boot热部署机制，使得在开发过程中代码修改后能够自动重新加载，无需手动重启服务
+2. 确保热部署配置仅在开发环境中生效，在生产环境中保持禁用状态
+3. 配置完成后，代码调整可以直接进行测试验证，无需等待完整的应用重启过程
+
+同时需要完善相关的技术文档和操作文档：
+1. 更新README.md文件，添加热部署配置说明和使用指南
+2. 在文档中明确说明热部署的适用场景、注意事项和最佳实践
+3. 提供详细的配置步骤说明，包括IDE配置要求（如IntelliJ IDEA或VS Code的设置）
+4. 说明如何启用/禁用热部署功能以及可能遇到的问题和解决方案
+
+ 登录页面（完整 UI 和逻辑）
+✅ 路由守卫（基于权限）
+✅ 用户管理界面（CRUD 操作，模拟数据）
+✅ 角色管理界面（静态数据）
+✅ 菜单管理界面（静态数据）
+✅ 业务模块页面框架（车辆、设备、驾驶员、检测、报警等）
+✅ 权限指令（v-hasPermi, v-hasRole）
+
+
+规则记录： 
+1、前后端接口字段冲突不一致，优先修改前端代码，保证后端接口不变
+
+# 一键编译并重启
+cd /Users/edy/devople/ideaProjects/carM/backend && \
+mvn clean install -DskipTests -pl carM-application -am && \
+lsof -ti:8080 | xargs kill -9 && \
+cd carM-application && \
+java -jar target/carM.jar --spring.profiles.active=dev
+
+要求实现是打开一个菜单是子页面内打开一个tab页，在tab中展示对应的页面信息
+
+zgrep '业务触达消息-WhatsApp-参数】reach:' info.2026-04-01.*.gz | grep 'DELIVERED_AFTER_48HOURS' | grep 'mobileNumber' | tail -n20
+
+
+分析当前系统，梳理该系统使用的技术栈及基础的技术架构。如果需要重新建立一个相同体系的独立的业务系统，生成一个创建新项目的maven脚手架项目，有新系统需要创建时基于这个脚手架项目快速创建新系统。并给出创建新系统的具体步骤。先将对应的技术栈及基础的技术架构信息梳理后展示出来，我觉得脚手架需要保留哪些不需要保留那些后再进行脚手架项目的创建，脚手架项目在一个新的目录中创建。
+
+请深入分析当前营销推送系统（voghion-marketing-push），详细梳理该系统使用的技术栈、框架组件、依赖关系以及基础的技术架构模式。
+
+在完成技术架构分析后，请设计并生成一个通用的企业级Maven脚手架项目模板，用于快速创建类似的独立业务系统。脚手架应包含以下要求：
+
+1. 技术栈分析：明确列出当前系统使用的各项技术，包括但不限于：
+   - 核心框架（Spring Boot, Dubbo等）
+   - 数据库访问技术（MyBatis等）
+   - 消息队列（RocketMQ, Kafka等）
+   - 缓存技术（Redis等）
+   - 定时任务（XXL-JOB等）
+   - API网关、RPC框架、日志系统等
+
+2. 架构模式分析：描述当前系统的微服务架构、分层结构（api、client、core、dal、model等）、模块间的依赖关系
+
+3. 脚手架设计原则：说明脚手架中需要保留的核心架构组件和需要移除的业务特定代码
+
+4. 脚手架项目结构：创建一个完整的Maven多模块项目模板，包含：
+   - admin模块（启动入口、控制器层）
+   - api模块（接口定义、DTO、枚举等）
+   - client模块（外部服务调用客户端）
+   - common模块（公共工具类、常量）
+   - core模块（核心业务逻辑）
+   - dal模块（数据访问层）
+   - model模块（数据模型）
+   - service模块（服务实现层）
+
+5. 创建新系统的具体步骤指南：提供基于此脚手架创建新业务系统的完整操作流程
+
+请将脚手架项目创建在新的独立目录中，并提供详细的配置说明文档。
+
+新建一个用户级别的skills，实现通过脚手架实现新项目的快速创建。使用voghion-scaffold目录作为其中的资源文件，在创建项目时使用该脚手架项目进行创建项目。skills支持按照脚手架使用文档中的步骤主动引导填写或选择对应的内容进行渐进式执行新建项目
+
+创建一个用户级别的skill，命名为voghion-new-project-ai，实现基于voghion-scaffold脚手架的新项目快速创建功能（注意：要将voghion-scaffold目录及下面所有的文件拷贝到skills的资源文件目录下，不要指定当前目录地址，因为该目录后续可能变更）。该skill需要：
+
+1. 使用/Users/edy/devople/ideaProjects/voghion-marketing-push/voghion-scaffold目录作为脚手架资源文件源
+2. 实现完整的项目创建流程，包括：
+   - 引导用户输入项目基本信息（项目名称、artifactId、groupId、版本号、包名等）
+   - 引导用户配置Nacos连接信息（服务器地址、配置分组等）
+   - 引导用户配置数据库、Redis、Dubbo、XXL-JOB等中间件连接信息
+   - 执行项目生成脚本(create-project.sh)创建新项目
+   - 提供后续编译和启动指导
+
+3. 支持两种交互模式：
+   - 渐进式引导模式：按照README.md文档中的步骤主动询问用户各项配置
+   - 参数预设模式：允许用户预先提供配置参数直接创建项目
+
+4. 在执行过程中需要：
+   - 验证用户输入的有效性
+   - 显示当前进度状态
+   - 处理可能出现的错误情况
+   - 提供清晰的操作反馈
+
+5. 最终输出：
+   - 成功创建的新项目路径
+   - 后续编译和部署的建议命令
+   - 项目配置文件的修改提示
+
+
+
+配置静态成员是为了避免频繁的触发在平衡。
+
+2026-04-10 14:36:44.302 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO o.a.k.clients.FetchSessionHandler [handleError,442] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Error sending fetch request (sessionId=1810833176, epoch=20791) to node 1: org.apache.kafka.common.errors.DisconnectException. 
+2026-04-10 14:36:44.302 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO o.a.k.clients.FetchSessionHandler [handleError,442] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Error sending fetch request (sessionId=920626443, epoch=20888) to node 3: org.apache.kafka.common.errors.DisconnectException. 
+2026-04-10 14:36:59.291 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO o.a.k.c.c.i.AbstractCoordinator [markCoordinatorUnknown,780] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Group coordinator 10.0.0.108:9092 (id: 2147483645 rack: null) is unavailable or invalid, will attempt rediscovery 
+2026-04-10 14:37:15.822 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO o.a.k.c.c.i.AbstractCoordinator [onSuccess,728] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Discovered group coordinator 10.0.0.108:9092 (id: 2147483645 rack: null) 
+2026-04-10 14:51:29.286 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] WARN o.a.k.c.c.i.AbstractCoordinator [run,1119] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] This member will leave the group because consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured max.poll.interval.ms, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing max.poll.interval.ms or by reducing the maximum size of batches returned in poll() with max.poll.records. 
+
+2026-04-10 15:11:29.967 [] [main] INFO o.a.k.clients.consumer.KafkaConsumer [subscribe,964] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Subscribed to topic(s): kf-topic-marketing-api-email-sc-low-priority-new 
+2026-04-10 15:11:30.779 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO o.a.k.c.c.i.AbstractCoordinator [onSuccess,728] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Discovered group coordinator 10.0.0.108:9092 (id: 2147483645 rack: null) 
+2026-04-10 15:11:30.780 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO o.a.k.c.c.i.ConsumerCoordinator [onJoinPrepare,476] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Revoking previously assigned partitions [] 
+2026-04-10 15:11:30.780 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO o.a.k.c.c.i.AbstractCoordinator [sendJoinGroupRequest,505] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] (Re-)joining group 
+2026-04-10 15:11:33.712 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO o.a.k.c.c.i.AbstractCoordinator [onSuccess,469] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Successfully joined group with generation 48 
+2026-04-10 15:11:33.712 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO o.a.k.c.c.i.ConsumerCoordinator [onJoinComplete,283] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Setting newly assigned partitions: kf-topic-marketing-api-email-sc-low-priority-new-17, kf-topic-marketing-api-email-sc-low-priority-new-16 
+2026-04-10 15:11:33.995 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO o.a.k.c.c.i.ConsumerCoordinator [refreshCommittedOffsetsIfNeeded,525] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Setting offset for partition kf-topic-marketing-api-email-sc-low-priority-new-17 to the committed offset FetchPosition{offset=928124, offsetEpoch=Optional[0], currentLeader=LeaderAndEpoch{leader=10.0.0.107:9092 (id: 1 rack: null), epoch=0}} 
+2026-04-10 15:11:33.996 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO o.a.k.c.c.i.ConsumerCoordinator [refreshCommittedOffsetsIfNeeded,525] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Setting offset for partition kf-topic-marketing-api-email-sc-low-priority-new-16 to the committed offset FetchPosition{offset=1027023, offsetEpoch=Optional[0], currentLeader=LeaderAndEpoch{leader=10.0.0.109:9092 (id: 3 rack: null), epoch=0}}
+
+
+
+
+2026-04-10 14:35:52.376 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:36:22.376 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:36:44.302 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.clients.FetchSessionHandler [handleError,442] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Error sending fetch request (sessionId=1810833176, epoch=20791) to node 1: org.apache.kafka.common.errors.DisconnectException.
+2026-04-10 14:36:44.302 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO  o.a.k.clients.FetchSessionHandler [handleError,442] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Error sending fetch request (sessionId=920626443, epoch=20888) to node 3: org.apache.kafka.common.errors.DisconnectException.
+2026-04-10 14:36:52.377 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:36:59.291 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO  o.a.k.c.c.i.AbstractCoordinator [markCoordinatorUnknown,780] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Group coordinator 10.0.0.108:9092 (id: 2147483645 rack: null) is unavailable or invalid, will attempt rediscovery
+2026-04-10 14:37:15.822 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO  o.a.k.c.c.i.AbstractCoordinator [onSuccess,728] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Discovered group coordinator 10.0.0.108:9092 (id: 2147483645 rack: null)
+2026-04-10 14:37:22.377 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:37:52.377 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:38:22.378 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:38:52.378 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:39:22.378 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:39:52.379 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:40:22.379 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:40:52.379 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:41:22.380 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:41:52.380 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:42:22.380 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:42:52.380 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:43:22.381 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:43:52.381 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:44:22.381 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:44:52.382 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:45:22.382 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:45:52.382 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:46:22.383 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:46:52.383 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:47:22.383 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:47:52.384 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:48:22.384 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:48:52.384 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:49:22.384 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:49:52.385 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:50:22.385 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:50:52.385 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:51:22.386 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:51:29.286 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] WARN  o.a.k.c.c.i.AbstractCoordinator [run,1119] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] This member will leave the group because consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured max.poll.interval.ms, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing max.poll.interval.ms or by reducing the maximum size of batches returned in poll() with max.poll.records.
+2026-04-10 14:51:52.386 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:52:22.386 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:52:52.386 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+
+
+2026-04-10 14:35:52.376 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:36:22.376 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:36:44.302 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.clients.FetchSessionHandler [handleError,442] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Error sending fetch request (sessionId=1810833176, epoch=20791) to node 1: org.apache.kafka.common.errors.DisconnectException.
+2026-04-10 14:36:44.302 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO  o.a.k.clients.FetchSessionHandler [handleError,442] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Error sending fetch request (sessionId=920626443, epoch=20888) to node 3: org.apache.kafka.common.errors.DisconnectException.
+2026-04-10 14:36:52.377 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:36:59.291 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO  o.a.k.c.c.i.AbstractCoordinator [markCoordinatorUnknown,780] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Group coordinator 10.0.0.108:9092 (id: 2147483645 rack: null) is unavailable or invalid, will attempt rediscovery
+2026-04-10 14:37:15.822 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] INFO  o.a.k.c.c.i.AbstractCoordinator [onSuccess,728] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Discovered group coordinator 10.0.0.108:9092 (id: 2147483645 rack: null)
+2026-04-10 14:37:22.377 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:37:52.377 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+...
+2026-04-10 14:50:52.385 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:51:22.386 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+2026-04-10 14:51:29.286 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-sc-low-property] WARN  o.a.k.c.c.i.AbstractCoordinator [run,1119] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] This member will leave the group because consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured max.poll.interval.ms, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing max.poll.interval.ms or by reducing the maximum size of batches returned in poll() with max.poll.records.
+2026-04-10 14:51:52.386 [] [pool-52-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,69] [] - summary of message pool count : 0 , threadName:kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 
+....
+2026-04-10 15:11:29.967 [] [main] INFO  o.a.k.clients.consumer.KafkaConsumer [subscribe,964] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Subscribed to topic(s): kf-topic-marketing-api-email-sc-low-priority-new
+2026-04-10 15:11:29.969 [] [main] INFO  c.v.a.c.k.c.KafkaConsumerBuilder [configAndStartConsumer,35] [] - kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0 was started
+2026-04-10 15:11:30.778 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  org.apache.kafka.clients.Metadata [update,261] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Cluster ID: GY-AUV1ESPqusTGLqBf_fw
+2026-04-10 15:11:30.779 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.c.c.i.AbstractCoordinator [onSuccess,728] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Discovered group coordinator 10.0.0.108:9092 (id: 2147483645 rack: null)
+2026-04-10 15:11:30.780 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.c.c.i.ConsumerCoordinator [onJoinPrepare,476] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Revoking previously assigned partitions []
+2026-04-10 15:11:30.780 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.c.c.i.AbstractCoordinator [sendJoinGroupRequest,505] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] (Re-)joining group
+2026-04-10 15:11:33.712 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.c.c.i.AbstractCoordinator [onSuccess,469] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Successfully joined group with generation 48
+2026-04-10 15:11:33.712 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.c.c.i.ConsumerCoordinator [onJoinComplete,283] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Setting newly assigned partitions: kf-topic-marketing-api-email-sc-low-priority-new-17, kf-topic-marketing-api-email-sc-low-priority-new-16
+2026-04-10 15:11:33.995 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.c.c.i.ConsumerCoordinator [refreshCommittedOffsetsIfNeeded,525] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Setting offset for partition kf-topic-marketing-api-email-sc-low-priority-new-17 to the committed offset FetchPosition{offset=928124, offsetEpoch=Optional[0], currentLeader=LeaderAndEpoch{leader=10.0.0.107:9092 (id: 1 rack: null), epoch=0}}
+2026-04-10 15:11:33.996 [] [kafka consumer thread kf-topic-marketing-api-email-sc-low-priority-new:kf-consumer-marketing-email-sc-low-property-0] INFO  o.a.k.c.c.i.ConsumerCoordinator [refreshCommittedOffsetsIfNeeded,525] [] - [Consumer instanceId=kf-consumer-marketing-email-sc-low-property-10.1.0.9-0, clientId=consumer-41, groupId=kf-consumer-marketing-email-sc-low-property] Setting offset for partition kf-topic-marketing-api-email-sc-low-priority-new-16 to the committed offset FetchPosition{offset=1027023, offsetEpoch=Optional[0], currentLeader=LeaderAndEpoch{leader=10.0.0.109:9092 (id: 3 rack: null), epoch=0}}
+
+1、如何确认时因为commitSync()抛出异常导致的消费实例线程崩溃的呢？
+2、要保证doConsumer()异常时，commitSync()也要提交保证不重复消费该怎么改？
+3、kafkaConsumerMetrics.recordCommitSync(time.nanoseconds() - commitStart);
+这个记录在哪里可以查看？
+
+
+问题复现
+2026-04-15 10:42:31 启动
+启动后通过造异常 是线程失效
+public void run() {
+        consumerThread = Thread.currentThread();
+        currentConsumerThreadName = Thread.currentThread().getName();
+        while (!shutdownFlag) {
+            long start = System.currentTimeMillis();
+            try {
+                ConsumerRecords<K, V> records = consumer.poll(pollTimeout);
+                summaryOfMessagePollCount += records.count();
+                doConsume(records);
+
+            } catch (Exception e) {
+                log.warn("kafka consume exception:{}", e);
+                Cat.newTransaction("kafkaError", "kafkaConsumeError").complete();
+            }
+            long end = System.currentTimeMillis();
+            if (!shutdownFlag) {
+                if(end - start < commitSyncTimeout.toMillis()){
+                    log.error("kafka consume error:{}",currentConsumerThreadName);
+                    throw new TimeoutException("Timeout of " +  commitSyncTimeout.toMillis() + "ms expired before successfully " +
+                            "committing offsets test"+currentConsumerThreadName );
+                }
+                consumer.commitSync(commitSyncTimeout);
+            }
+        }
+    }
+2026-04-15 10:46:08 以注册到Brocker
+2026-04-15 10:43:19.601  日志显示已经抛出异常，说明线程异常了
+2026-04-15 10:49:19.549 日志显示消费者被踢出消费组了  刚好6分钟跟
+ 之后消费者无法重新建立连接。
+
+ 修复：
+ 增加守护检测
+ // 守护检测：消费者线程意外死亡时自动重启
+            if (consumerThread != null && !consumerThread.isAlive() && !shutdownFlag) {
+                log.error("[KafkaConsumer-Watchdog] consumer thread [{}] died unexpectedly, restarting...", currentConsumerThreadName);
+                Thread restartThread = new Thread(AbstractKafkaConsumer.this);
+                restartThread.setName(currentConsumerThreadName);
+                restartThread.start();
+                log.info("[KafkaConsumer-Watchdog] consumer thread [{}] restarted successfully.", currentConsumerThreadName);
+            }
+
+修改守护线程执行间隔为390s ,比踢出时间长，让踢出后再修改
+2026-04-15 11:27:47 启动
+2026-04-15 11:30:04 已注册
+2026-04-15 11:31:19 造异常节点
+2026-04-15 11:32:19 抛出异常
+2026-04-15 11:35:15 节点查不到
+2026-04-15 11:35:44 节点有了
+
+2026-04-15 11:32:09.978  节点异常日志
+2026-04-15 11:32:09.978 [] [kafka consumer thread kf-topic-marketing-api-email-low-priority-new:kf-consumer-marketing-email-low-property-0] ERROR c.v.a.c.k.c.AbstractKafkaConsumer [run,105] [] - kafka consume error:kafka consumer thread kf-topic-marketing-api-email-low-priority-new:kf-consumer-marketing-email-low-property-0
+2026-04-15 11:33:12.280  节点离开日志
+2026-04-15 11:33:11.879 [] [kafka-coordinator-heartbeat-thread | kf-consumer-marketing-email-low-property] WARN  o.a.k.c.c.i.AbstractCoordinator [run,1119] [] - [Consumer instanceId=kf-consumer-marketing-email-low-property-10.10.206.29-0, clientId=consumer-33, groupId=kf-consumer-marketing-email-low-property] This member will leave the group because consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured max.poll.interval.ms, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing max.poll.interval.ms or by reducing the maximum size of batches returned in poll() with max.poll.records.
+节点恢复日志
+2026-04-15 11:35:17.245 [] [pool-44-thread-1] ERROR c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,79] [] - [KafkaConsumer-Watchdog] consumer thread [kafka consumer thread kf-topic-marketing-api-email-low-priority-new:kf-consumer-marketing-email-low-property-0] died unexpectedly, restarting...
+2026-04-15 11:35:17.245 [] [pool-44-thread-1] INFO  c.v.a.c.k.c.AbstractKafkaConsumer [lambda$build$0,83] [] - [KafkaConsumer-Watchdog] consumer thread [kafka consumer thread kf-topic-marketing-api-email-low-priority-new:kf-consumer-marketing-email-low-property-0] restarted successfully.
+
+grep 'kf-consumer-marketing-email-low-property' info.log| grep 'error' 节点异常日志
+grep 'kf-consumer-marketing-email-low-property' info.log| grep 'leave'  节点离开日志
+grep 'kf-consumer-marketing-email-low-property' info.log| grep 'KafkaConsumer-Watchdog' 节点恢复日志
+
+2026-04-15 11:10:21 启动
+2026-04-15 11:10:45 已注册
+2026-04-15 12:31:31 造异常节点
+2026-04-15 11:12:28 日志显示已经抛出异常，说明线程异常了
+
+2个方案：
+1、捕获异常并现场sleep一段时间
+2、不捕获异常线程关掉后，过段时间重新建个线程。
+时间间隔怎么控制?
+
+
+  970  bin/zookeeper-server-start.sh config/zookeeper.properties 1>/dev/null 2>&1 &
+  971  bin/kafka-server-start.sh config/server.properties 1>/dev/null 2>&1 &
+  972  ps -ef|grep zook
+  973  ps -ef|grep kafka
+
+
+
+{"businessName":"邮件汇总通知","dingTalkLink":"https://oapi.dingtalk.com/robot/send?access_token=953be2934457654453b9fa716650d8522d687f2a368c982a1963c0923f0fe1cb","markdownMessage":{"at":{"atAll":false,"atMobiles":["18516122907","15026490798","15800422018"]},"markdown":{"text":"@18516122907,@15026490798,@15800422018, \n### 营销自动化 Email 任务生成完成\n> **【总任务数】**: 3\n> **【成功数量】**: 3\n> **【失败数量】**: 0\n  \n > ###### 2026-04-11 03:00:01","title":"邮件汇总通知"},"msgtype":"markdown"},"messageType":"MARKDOWN","secret":"SEC46f6cac37e952ea545f12559bfa0a6d7afbad5ce82b8e14b9f49ab194c878f17","timestamp":"2026-04-11T03:00:01.431"}
+
+
+
+bin/kafka-consumer-groups.sh --bootstrap-server kafka.test.chatgptvips.com:9092 --group consumer-marketing-email-low-property --members --describe
+bin/kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group consumer-marketing-email-low-property --members --describe
+
+
+系统使用amazon 的ses服务发送营销邮件。在配置集中配置发送Amazon SES中硬退信, 点击, 投诉, 送达, 打开, 拒绝次数, 呈现失败, 发送次数等这些事件类型的事件到Amazon SNS中，在Amazon SNS中配置订阅Amazon SQS。
+现在想在基于Amazon这些平台，实现获取SQS中的数据、解析不同类型事件的数据并将数据发送到kafka消息队列中，然后消费消息对消息记录存放在BigQuery中。
+对存入bigQuery中的数据进行如图的统计，根据图中统计页面中的信息设计数据的存储方案，消息结论可以粗放在BigQuery表，给出存储方案中涉及的数据结构的具体设计。
+请给出具体的方案和详细的配置步骤和完整的代码实现。结合现有系统的代码风格和代码规范系统为Java系统集成了springboot，要指出实现过程中要特别注意的问题，例如消息幂等、服务重试、数据不重复等这些问题。
+
+
+系统使用amazon 的ses服务发送营销邮件。在配置集中配置发送Amazon SES中硬退信, 点击, 投诉, 送达, 打开, 拒绝次数, 呈现失败, 发送次数等这些事件类型的事件到Amazon SNS中，在Amazon SNS中配置订阅Amazon SQS。
+现在想在基于Amazon这些平台，实现获取SQS中的数据、解析不同类型事件的数据并将同意发送数据到同一个kafka主题的消息队列中。设计合适的kafka消息体结构。
+请给出具体的方案和完整的代码实现。结合现有系统的代码风格和代码规范系统为Java系统集成了springboot，要指出实现过程中要特别注意的问题。如获取数据失败通知sqs进入死信队列。
+
+
+明细表：
+sqsMessageId 事件ID
+String eventTimestamp; 事件发生时间
+eventType 事件类型
+
+mailITimestamp  邮件发送时间戳
+mailMessageId   邮件发送messageId
+destination  收件地址
+taskId  任务ID
+templateId 模版ID
+
+
+事件明细表
+CREATE TABLE IF NOT EXISTS `bq-ai-202509.events.ses_event_message` (
+    id STRING NOT NULL,
+    caller_type STRING, 邮件发送类型 auto-marketing 、notification
+    event_type STRING, 事件类型
+    sqs_message_id STRING, 
+    sns_message_id STRING,
+    mail_message_id STRING,
+    event_timestamp STRING, 事件发生时间
+    mail_timestamp STRING,  邮件发送时间 格式：
+    source STRING,          发件邮箱箱
+    destination STRING,     收件邮箱  拆明细
+    campaign_id STRING,     任务ID
+    template_id STRING,     邮箱模版ID
+    caller_type STRING,
+    event_body STRING,      事件对应数据
+    enter_time INT64        插入时间
+);
+
+汇总表
+CREATE TABLE IF NOT EXISTS `bq-ai-202509.events.ses_event_message_stats` (
+  stat_date DATE, 日期  2026-04-22
+  --stat_hour, 小时
+  caller_type STRING,
+  campaign_id STRING, 任务ID
+  template_id STRING, 邮箱模版ID
+
+  -- 发送漏斗
+  request_cnt INT64,    请求数  event_type=Request
+  send_cnt INT64,       发送数（计费数） event_type=Send
+  delivery_cnt INT64,   送达数 event_type=Delivery
+  bounce_cnt INT64,     退信数 event_type=Delivery
+  complaint_cnt INT64,  投诉  event_type=bounce
+  reject_cnt INT64,     拒绝  event_type=complaint
+  -- 行为
+  open_cnt INT64,       打开次数 event_type=open
+  open_user_cnt INT64,  打开人数 
+  click_cnt INT64,      点击次数 event_type=click
+  click_user_cnt INT64, 点击人数
+  -- 转化率  不计统计表
+  --delivery_rate FLOAT64, 送达转换率 （送达数/请求数）
+  --complaint_rate FLOAT64, （投诉数/发送数）
+  --bounce_rate FLOAT64,  （退信数/请求数数）
+  --open_rate FLOAT64, 打开转换率 （打开数/送达数）
+  --click_rate FLOAT64, （点击数/送达数）
+  --open_user_rate FLOAT64, 打开转换率 （打开人数/送达数）
+  --click_user_rate FLOAT64, （点击人数/送达数）
+  
+）;
+
+统计维度  event_type、caller_type、mail_timestamp、destination、campaign_id、template_id 
+event_type的类型汇总
+    BOUNCE("Bounce", "退信事件"),
+    CLICK("Click", "点击事件"),
+    COMPLAINT("Complaint", "投诉事件"),
+    DELIVERY("Delivery", "送达事件"),
+    OPEN("Open", "打开事件"),
+    REJECT("Reject", "拒绝事件"),
+    RENDERING_FAILURE("RenderingFailure", "呈现失败事件"),
+    SEND("Send", "发送事件"),
+    REQUEST("Request", "请求事件"),
+    UNKNOWN("Unknown", "未知事件");
+
+
+
+
+
+
+事件明细表
+CREATE TABLE IF NOT EXISTS `bq-ai-202509.events.ses_event_message` (
+    id STRING NOT NULL,
+    caller_type STRING, 邮件发送类型 auto-marketing 、notification
+    event_type STRING, 事件类型
+    sqs_message_id STRING, 
+    sns_message_id STRING,
+    mail_message_id STRING,
+    event_timestamp STRING, 事件发生时间
+    mail_timestamp STRING,  邮件发送时间 格式：
+    source STRING,          发件邮箱箱
+    to STRING,     收件邮箱  
+    campaign_id STRING,     任务ID
+    template_id STRING,     邮箱模版ID
+    caller_type STRING,
+    event_body STRING,      事件对应数据
+    enter_time INT64        插入时间
+);
+
+汇总表
+CREATE TABLE IF NOT EXISTS `bq-ai-202509.events.ses_event_message_stats` (
+  stat_date DATE, 日期  2026-04-22
+  caller_type STRING,
+  campaign_id STRING, 任务ID
+  template_id STRING, 邮箱模版ID
+
+  -- 发送
+  request_cnt INT64,    请求数  event_type=Request
+  send_cnt INT64,       发送数（计费数） event_type=Send
+  delivery_cnt INT64,   送达数 event_type=Delivery
+  bounce_cnt INT64,     退信数 event_type=Delivery
+  complaint_cnt INT64,  投诉  event_type=bounce
+  reject_cnt INT64,     拒绝  event_type=complaint
+  rendering_failure_cnt INT64,  无效邮件 event_type=RenderingFailure,
+  -- 行为
+  open_cnt INT64,       打开次数 event_type=open
+  open_user_cnt INT64,  打开人数 
+  click_cnt INT64,      点击次数 event_type=click
+  click_user_cnt INT64, 点击人数
+）;
+
+统计维度  event_type、caller_type、mail_timestamp、destination、campaign_id、template_id 
+event_type的类型汇总
+    BOUNCE("Bounce", "退信事件"),
+    CLICK("Click", "点击事件"),
+    COMPLAINT("Complaint", "投诉事件"),
+    DELIVERY("Delivery", "送达事件"),
+    OPEN("Open", "打开事件"),
+    REJECT("Reject", "拒绝事件"),
+    RENDERING_FAILURE("RenderingFailure", "呈现失败事件"),
+    SEND("Send", "发送事件"),
+    REQUEST("Request", "请求事件"),
+    UNKNOWN("Unknown", "未知事件");
+
+
+
+    使用在代码中通过Configuration来设置多数据源的方式，修改项目代码
+
+
+观察push中取消订阅的数据   发送取消订阅事件信息到kafka 日志
+观察api中发送请求的数据  在kafka中查看
+
+
+静安福邸公租房  7km
+南洋家园  3.2km
+市筹公租房没长宁和静安区房源
+
+{
+  "id" : "6a0423e9783c533cd2835f0c",
+  "status" : "accepted",
+  "from" : "+12245300413",
+  "to" : "+447880350066",
+  "wabaId" : "469613866227835",
+  "type" : "interactive",
+  "interactive" : {
+    "type" : "cta_url",
+    "action" : {
+      "name" : "cta_url",
+      "parameters" : {
+        "display_text" : "Give Thoughts >",
+        "url" : "https://voghion-appin.onelink.me/aSul/js7tj27l"
+      }
+    },
+    "body" : {
+      "text" : "🌍 Hello from Voghion!\n\n🎁 Rewards waiting for you!\n\nYour review rewards are ready — get at least €5.\nLeave a review now to unlock extra surprise rewards 👇\n\n⏳ Don’t miss out.\nShare your thoughts and claim your rewards in seconds.\n\n👉 Tap now to review"
+    },
+    "header" : {
+      "type" : "image",
+      "image" : {
+        "link" : "https://g-images.voghion.com/productImages/143_1773139645318_voghion1464x640.jpg"
+      }
+    },
+    "footer" : {
+      "text" : "Voghion Team"
+    }
+  },
+  "createTime" : "2026-05-13T07:10:33.157Z",
+  "totalPrice" : 0.0198,
+  "pricingCategory" : "utility",
+  "currency" : "USD",
+  "regionCode" : "GB",
+  "bizType" : "whatsapp",
+  "category" : "utility"
+}
+
+
+
+
+select * from `voghion-comment`.push_message_list
+select * from `voghion-comment`.mail_message_list
+select * from `voghion-comment`.sms_task_list
+select * from `voghion-comment`.sms_task_list
+
+
+select title,content,icon from `voghion-comment`.push_message_list where push_time>'2026-05-13 00:00:00'
+select mail_title,mail_invoke_name from `voghion-comment`.mail_message_list where send_time > '2026-05-13 00:00:00' 
+select * from `voghion-comment`.sms_task_list where > '2026-05-13 00:00:00'
+
+
+
+
+请求 
+
+发送（计费邮件） Aws 
+送达
+渲染失败
+退信
+
+投诉事件
+
+取消订阅。我自己记录\
+
+
+curl --request PATCH \
+     --url https://api.ycloud.com/v2/webhookEndpoints/6b0acfa2b170a151f01dabaf \
+     --header 'X-API-Key: 621a69065f1d4701faccaa69f1786f84' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data '
+{
+  "enabledEvents": [
+    "whatsapp.template.correct_category_detection"
+  ],
+  "url": "https://test-reach.voghion.com/callback/yCloud/templateCategoryChange"
+}
+'
+
+
+
+redis-cli -h 10.0.0.76 -p 6379 -a iGsqYvxBzbw5
+
+BITCOUNT mkt:email:rr:sent:9
+STRLEN  mkt:email:rr:sent:9
+TTL  mkt:email:rr:sent:9
+
+10.0.0.76:6379[9]> BITCOUNT mkt:email:rr:sent:9
+(integer) 400021
+10.0.0.76:6379[9]> STRLEN  mkt:email:rr:sent:9
+(integer) 1374686
+10.0.0.76:6379[9]> TTL  mkt:email:rr:sent:9
+(integer) 220185
+
+#update wa_task_config 
+#set account_key = 'blUTMKgN',
+#account_user = 's3B9t6Km'
+#where channel_id=1
+
+#update wa_task_template_config 
+#set account_key = 'blUTMKgN',
+#account_user = 's3B9t6Km'
+#where channel_id=1
+
+
+
+
+https://prod-reach.voghion.com/callback/yCloud/businessAccount
+
+whatsapp.business_account.updated
+
+
+当前项目下 com.voghion.api.core.push
+com.voghion.api.core.email
+com.voghion.api.core.imessage
+com.voghion.api.core.sms
+com.voghion.api.core.whats
+com.voghion.api.core.rcs
+这些包中有关于对应渠道不同供应商的接口的具体请求方式。阅读这些代码并梳理请各个供应商请求的具体实现及所需请求鉴权是所需凭证的处理方式。
+voghion-marketing-push 项目中com.voghion.marketing.push.core.reach.strategy.impl
+现在要使用channel_credential中配置的凭证管理中根据不停场景中配置的绑定的凭证ID获取对应的凭证，对应绑定关系是后加功能，实现时要先确定是否配置中是否存在对应的凭证ID，及当前配置的凭证ID是否存在且生效中，之后用channel_credential配置的凭证进行接口请求，但是如果不存在就还是用原来的方式请求，就是如果新的方式不生效要用老的方式兜底。基于这个实现该如何设计该功能的执行方案
+
+
+
+
+zgrep '【业务触达消息准备发送WhatsApp】reachId:65'  info.2026-06-03.*.gz | wc -l  1159
+zgrep '【业务触达消息-WhatsApp-参数】reach:MERCHANT_AFTER_WAREHOUSE_OUT_NOTICE' info.2026-06-03.*.gz | wc -l  579
+
+zgrep 'accept whatsApp message , sendPriority' info-2026-06-03.*.gz | grep '"batchId":"65"' | wc -l
+zgrep 'yCloud WhatsApp发送，优先级:'  info-2026-06-03.*.gz | grep '"useDirectSend":true' | wc -l   366+389
+
+ zgrep 'MarketingReachWhatsAppConfig 配置异常 , reachId:65' info.2026-06-03.*.gz 
+6月2号
+975+0
+1837+837
+413+192
+305+300
+
+1014+0
+585+239
+ask 4: 搭建 API 侧 resolver / applier 运行时框架
+
+我觉得周总结是对日总结的汇总和提炼，如何基于当前的日总结生成一个对日总结的汇总和提炼呢。如果基于当前的文件目录输出的文件该存放，定义文件名和文件类型

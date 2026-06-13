@@ -1,0 +1,7 @@
+host = "mysql-01.test.chatgptvips.com"
+port = 3306
+user = "prod"
+password = "Stars@2019"
+database = "voghion-comment"
+connect_timeout = 10
+max_limit = 1000
