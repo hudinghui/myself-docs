@@ -1488,3 +1488,7 @@ zgrep 'yCloud WhatsApp发送，优先级:'  info-2026-06-03.*.gz | grep '"useDir
 ask 4: 搭建 API 侧 resolver / applier 运行时框架
 
 我觉得周总结是对日总结的汇总和提炼，如何基于当前的日总结生成一个对日总结的汇总和提炼呢。如果基于当前的文件目录输出的文件该存放，定义文件名和文件类型
+
+VOGHION_OPENAI_KEY=sk-1rVicvxy448qfSxGUcYneHBcnSB5Om9D7fBcXp2hW8ZvSImO
+
+
