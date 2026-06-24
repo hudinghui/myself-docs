@@ -1492,3 +1492,61 @@ ask 4: 搭建 API 侧 resolver / applier 运行时框架
 VOGHION_OPENAI_KEY=sk-1rVicvxy448qfSxGUcYneHBcnSB5Om9D7fBcXp2hW8ZvSImO
 
 
+model_provider = "voghion-openai"
+model = "gpt-5.4"
+[model_providers.voghion-openai]
+name = "voghion-openai"
+base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+env_key = "VOGHION_OPENAI_KEY"
+
+
+
+
+
+    private boolean isCurrentSourceOpen(MarketingReachConfig marketingReachConfig, Integer currentSource) {
+        if (currentSource == null) {
+            return true;
+        }
+        if (currentSource.equals(MarketingReachDomainEnums.PUSH.getDomain())) {
+            return marketingReachConfig.isOpenPush();
+        }
+        if (currentSource.equals(MarketingReachDomainEnums.SMS.getDomain())) {
+            return marketingReachConfig.isOpenSms();
+        }
+        if (currentSource.equals(MarketingReachDomainEnums.EMAIL.getDomain())) {
+            return marketingReachConfig.isOpenEmail();
+        }
+        if (currentSource.equals(MarketingReachDomainEnums.WHATSAPP.getDomain())) {
+            return marketingReachConfig.isOpenWhatsApp();
+        }
+        if (currentSource.equals(MarketingReachDomainEnums.IMESSAGE.getDomain())) {
+            return marketingReachConfig.isOpenIme();
+        }
+        if (currentSource.equals(MarketingReachDomainEnums.RCS.getDomain())) {
+            return marketingReachConfig.isOpenRcs();
+        }
+        return true;
+    }
+
+    private void removeCurrentSource(LinkedHashMap<Integer, Integer> priorityMap, Integer currentSource) {
+        if (priorityMap == null || currentSource == null) {
+            return;
+        }
+        priorityMap.entrySet().removeIf(entry -> entry.getKey().equals(currentSource));
+    }
+
+
+    if (marketingReachConfig == null) {
+            log.warn("isProcessingSource reachId:{} config is null", reachId);
+            return false;
+        }
+        if (!marketingReachConfig.isOpenReach()) {
+            log.info("reachId:{} 场景未开启 currentSource:{}", reachId, currentSource);
+            removeCurrentSource(priorityMap, currentSource);
+            return false;
+        }
+        if (!isCurrentSourceOpen(marketingReachConfig, currentSource)) {
+            log.info("reachId:{} 渠道未开启 currentSource:{}", reachId, currentSource);
+            removeCurrentSource(priorityMap, currentSource);
+            return false;
+        }
